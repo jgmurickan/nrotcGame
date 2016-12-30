@@ -1,0 +1,19 @@
+<!doctype html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+<p>Create your Password</p>
+
+<div class="form-group">
+	<form name="password" method='POST' action="{{ url_for('passcreate') }}">
+	    <label for="password">Hello {{ name }} <br> <br> Create your password:</label>
+	    <input type="password" class="form-control" id="password" name="password">
+	  	<button type="submit" class="btn btn-default">Submit</button>
+	</form>
+</div>
+
+<!-- <form action="{{ url_for('login') }}" method='post'> -->

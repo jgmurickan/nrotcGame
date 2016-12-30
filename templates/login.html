@@ -1,0 +1,33 @@
+<!doctype html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+    	<ul>
+           {% for message in messages %}
+           <li> {{ message }} </li>
+           {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<h1><center>Login</center></h1>
+</br>
+<div class="form-group">
+	<label class="control-label col-sm-offset-2 col-sm-2" for="name">Name</label>
+	<form name="name" class="col-sm-6 col-md-4" method='POST' action="{{ url_for('password') }}">
+		<select name="name" class="form-control">
+		  {% for user in users %}
+		  	<option value="{{ user }}">{{ user }}</option>
+		  {% endfor %}
+		</select>
+		<input type="submit"> 
+	</form>
+</div>
+
+<!-- <form action="{{ url_for('login') }}" method='post'> -->

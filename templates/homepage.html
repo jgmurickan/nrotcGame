@@ -1,0 +1,22 @@
+<!doctype html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+<h1><center>Welcome!</center></h1>
+</br>
+</br>
+<form name="game" method='POST' action="{{ url_for('game') }}">
+	<center><button class="btn btn-default">Play Game</button></center>
+</form>
+</br>
+</br>
+<form name="leaderboard" method='POST' action="{{ url_for('leaderboard') }}">
+	<center><button class="btn btn-default">Leaderboard</button></center>
+</form>
+
+
+<!-- <form action="{{ url_for('login') }}" method='post'> -->
