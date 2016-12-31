@@ -1,0 +1,26 @@
+<!doctype html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+<h1><center>Instructions</center></h1>
+</br>
+</br>
+<p><center>This quiz consists of 30 questions that will test your knowledge of Navy and Marine Corps platforms</center></p>
+</br>
+<p><center>You will be shown a picture of a platform, and you will have 5 seconds to submit the correct answer</center></p>
+</br>
+<p><center>If you get the question correct, you will receive 1 point. If you get a question wrong or don't answer in time, you will lose 5 points</center></p>	
+</br>
+<p><center><b>Good luck!</b></center></p>
+</br>
+</br>
+<form name="leaderboard" method='POST' action="{{ url_for('game') }}">
+	<center><button class="btn btn-default">Begin Quiz</button></center>
+</form>
+
+
+<!-- <form action="{{ url_for('login') }}" method='post'> -->

@@ -146,6 +146,10 @@ def passverify():
 def login():
 	return render_template("login.html", users=users)
 
+@app.route('/instructions', methods=['GET', 'POST'])
+def instructions():
+	return render_template("instructions.html")
+
 @app.route('/game', methods=['GET', 'POST'])
 def game():
 	return "WELCOME TO THE GAME"
