@@ -1,0 +1,27 @@
+<!doctype html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+
+
+{% set question_id = question_id + 1 %}
+
+<h3><center>Question {{ question_id }}</center></h3>
+</br>
+<center><img src= "{{ url_for('static', filename = 'images/') }}{{ path }}" class="img-fluid" alt="Responsive image" width = "600" height = "400"></center>
+</br>
+<form name="answer" method='POST' action="{{ url_for('game', question_id=question_id) }}">
+	{% for choice in choices %}
+		<center><div class="radio">
+	  		<label><input type="radio" name="answer" value="{{ choice }}" required>{{ choice }}</label>
+		</div></center>
+	{% endfor %}
+	</br>
+	<center><button class="btn btn-default">Submit</button></center>
+</form>
+
+<!-- <form action="{{ url_for('login') }}" method='post'> -->

@@ -11,14 +11,14 @@
 </br>
 <p><center>This quiz consists of 30 questions that will test your knowledge of Navy and Marine Corps platforms</center></p>
 </br>
-<p><center>You will be shown a picture of a platform, and you will have 5 seconds to submit the correct answer</center></p>
+<p><center>You will be shown a picture of a platform, and you will have 7 seconds to submit the correct answer</center></p>
 </br>
-<p><center>If you get the question correct, you will receive 1 point. If you get a question wrong or don't answer in time, you will lose 5 points</center></p>	
+<p><center>If you get the question correct, you will receive 1 point. If you get a question wrong or don't answer in time, you will lose 2 points</center></p>	
 </br>
 <p><center><b>Good luck!</b></center></p>
 </br>
 </br>
-<form name="leaderboard" method='POST' action="{{ url_for('game') }}">
+<form name="leaderboard" method='POST' action="{{ url_for('game', question_id=0) }}">
 	<center><button class="btn btn-default">Begin Quiz</button></center>
 </form>
 
