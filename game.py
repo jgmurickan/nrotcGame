@@ -8,7 +8,7 @@ app.secret_key = 'OUSTILLSUCKS'
 
 connection = sqlite3.connect("game.db")
 cursor = connection.cursor()
-cursor.execute("SELECT name from login")
+cursor.execute("SELECT name from login order by name")
 users = cursor.fetchall()
 index = 0
 for u in users:
