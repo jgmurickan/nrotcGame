@@ -6,8 +6,35 @@
 
 <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
 
-
-<center><p>Leaderboard</p></center>
+<h2><center><b>Leaderboard</b></center></h2>
+</br>
+<center>
+<a class="btn btn-primary" href="{{url_for('homepage')}}" role="button">Homepage</a>
+<a class="btn btn-primary" href="{{url_for('stats')}}" role="button">Averages</a>
+</br>
+</center>
+<center>
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Platoon</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+    	{% for u in lead_list %}
+    	<tr>
+    		<td>{{ u[0] }}</td>
+    		<td>{{ u[1] }}</td>
+    		<td>{{ u[2] }}</td>
+    	</tr>
+    	{% endfor %}
+    </tbody>
+  </table>
+</div>
+</center>
 
 
 <!-- <form action="{{ url_for('login') }}" method='post'> -->

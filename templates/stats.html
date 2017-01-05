@@ -1,0 +1,105 @@
+<!doctype html>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+<style>
+
+table{
+    table-layout: fixed;
+    width: 300px;
+}
+
+
+</style>
+
+<h2><center><b>Averages</b></center></h2>
+</br>
+<center><a class="btn btn-primary" href="{{url_for('leaderboard')}}" role="button">Leaderboard</a></center>
+</br>
+<div class="table-responsive">
+  <table class="table">
+    <h3>Platoon Averages</h3>
+    <thead>
+      <tr>
+        <th>Platoon</th>
+        <th>Average Score</th>
+        <th>Top Performer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+    		<td>Platoon 1</td>
+    		<td>{{ plt1_avg }}</td>
+    		<td>{{ tp_plt1 }}</td>
+      </tr>
+      <tr>
+        <td>Platoon 2</td>
+        <td>{{ plt2_avg }}</td>
+        <td>{{ tp_plt2 }}</td>
+      </tr>
+      <tr>
+        <td>Leatherneck Platoon</td>
+        <td>{{ ln_avg }}</td>
+        <td>{{ tp_ln }}</td>
+      </tr>
+      <tr>
+        <td>Battalion Staff</td>
+        <td>{{ bnstaff_avg }}</td>
+        <td>{{ tp_bn }}</td>
+      </tr>
+      <tr>
+        <td>Unit Staff</td>
+        <td>{{ unstaff_avg }}</td>
+        <td>{{ tp_un }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</br>
+
+<div class="table-responsive">
+  <table class="table">
+    <h3>Class Averages</h3>
+    <thead>
+      <tr>
+        <th>Class</th>
+        <th>Average Score</th>
+        <th>Top Performer</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1/C</td>
+        <td>{{ first_avg }}</td>
+        <td>{{ tp_first }}</td>
+      </tr>
+      <tr>
+        <td>2/C</td>
+        <td>{{ second_avg }}</td>
+        <td>{{ tp_second }}</td>
+      </tr>
+      <tr>
+        <td>3/C</td>
+        <td>{{ third_avg }}</td>
+        <td>{{ tp_third }}</td>
+      </tr>
+      <tr>
+        <td>4/C</td>
+        <td>{{ fourth_avg }}</td>
+        <td>{{ tp_fourth }}</td>
+      </tr>
+      <tr>
+        <td>MECEP</td>
+        <td>{{ mecep_avg }}</td>
+        <td>{{ tp_mecep }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- <form action="{{ url_for('login') }}" method='post'> -->

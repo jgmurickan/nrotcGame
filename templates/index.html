@@ -5,10 +5,20 @@
 <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
 
 <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+<style>
 
-<center><img src= "{{ url_for('static', filename = 'logo.png') }}" class="img-fluid" alt="Responsive image" height=25% width=25%></center>
-</br>
-<center><a class="btn btn-primary" href="{{url_for('login')}}" role="button">Press Here to Login</a></center>
+body {
+    background-color: #E37224;
+}
 
+</style>
+<title>
+UT NROTC Knowledge Game
+</title>
+<body>
+	<center><img src= "{{ url_for('static', filename = 'logo.png') }}" class="img-fluid" alt="Responsive image" height=25% width=25%></center>
+	</br>
+	<center><a class="btn btn-primary" href="{{url_for('login')}}" role="button">Press Here to Login</a></center>
+</body>
 
 <!-- <form action="{{ url_for('login') }}" method='post'> -->

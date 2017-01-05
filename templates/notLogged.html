@@ -6,13 +6,8 @@
 
 <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
 
-<h1><center>Score: {{ score }}</center></h1>
+<h2><center><b>You are not logged in</b></center></h2>
 </br>
-<h3><center>{{ status }}</center></h3>
+<center>
+<a class="btn btn-primary" href="{{url_for('login')}}" role="button">Log In</a>
 </br>
-<center><a class="btn btn-primary" href="{{url_for('leaderboard')}}" role="button">Leaderboard</a></center>
-
-
-
-
-<!-- <form action="{{ url_for('login') }}" method='post'> -->
