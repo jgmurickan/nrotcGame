@@ -209,14 +209,21 @@ def score():
 	cursor.execute("SELECT * from leaderboard WHERE name='" + name + "'")
 	name_row = cursor.fetchone()
 	status = ''
-	if(int(name_row[1]) < score):
+	if(not name_row):
 		status = "Your new high score!"
 		cursor.execute("DELETE FROM leaderboard WHERE name = '" + name + "'")
 		sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
 		cursor.execute(sql_command)
 		connection.commit()
 	else:
-		status = "Current high score: " + str(name_row[1])
+		if(int(name_row[1]) < score):
+			status = "Your new high score!"
+			cursor.execute("DELETE FROM leaderboard WHERE name = '" + name + "'")
+			sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
+			cursor.execute(sql_command)
+			connection.commit()
+		else:
+			status = "Current high score: " + str(name_row[1])
 	connection.close()
 
 	return render_template("score.html", score=score, status=status)
