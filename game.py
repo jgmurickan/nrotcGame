@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, url_for, render_template, flash
 import sqlite3
 import random
-
+from time import sleep
 
 app = Flask(__name__)
 app.secret_key = 'OUSTILLSUCKS'
@@ -14,7 +14,6 @@ index = 0
 for u in users:
 	users[index] = u[0]
 	index += 1
-
 
 name = ''
 platoon = ''
@@ -121,7 +120,6 @@ def game(question_id):
 		return "You are not logged in, please return to the frontpage and log in"
 	if(question_id > 0):
 		global user_answers
-		print(request.form["answer"])
 		if not user_answers[question_id-1]:
 			user_answers[question_id-1] = request.form["answer"]
 		else:
@@ -130,8 +128,10 @@ def game(question_id):
 		return redirect(url_for('score'))
 
 	path = ''
+	old = 0
 	if not pic_used[question_id]:
 
+		print(question_id)
 		# select random platform and create path to send to template
 		randlist = [platforms[0]] * 30 + [platforms[1]] * 20 + [platforms[2]] * 20 + [platforms[3]] * 20 + [platforms[4]] * 5
 		rand1 = random.choice(randlist)
@@ -191,8 +191,9 @@ def game(question_id):
 
 	else:
 		path = pic_used[question_id]
+		old = 1
 
-	return render_template("game.html", path=path, choices=choices, question_id=question_id)
+	return render_template("game.html", path=path, choices=choices, question_id=question_id, old=old)
 
 
 @app.route('/score', methods=['GET', 'POST'])
@@ -203,7 +204,16 @@ def score():
 			score += 1
 		else:
 			score -= 3
-
+	
+	global user_answers
+	global pic_used
+	global answer
+	global choices
+	user_answers = [None] * 30
+	pic_used = [None] * 30
+	answer = ''
+	choices = []
+	
 	connection = sqlite3.connect("game.db")
 	cursor = connection.cursor()
 	cursor.execute("SELECT * from leaderboard WHERE name='" + name + "'")
@@ -212,14 +222,20 @@ def score():
 	if(not name_row):
 		status = "Your new high score!"
 		cursor.execute("DELETE FROM leaderboard WHERE name = '" + name + "'")
-		sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
+		if(user_class is None):
+			sql_command = "INSERT INTO leaderboard(name, score, platoon) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "')"
+		else:
+			sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
 		cursor.execute(sql_command)
 		connection.commit()
 	else:
 		if(int(name_row[1]) < score):
 			status = "Your new high score!"
 			cursor.execute("DELETE FROM leaderboard WHERE name = '" + name + "'")
-			sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
+			if(user_class is None):
+				sql_command = "INSERT INTO leaderboard(name, score, platoon) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "')"
+			else:
+				sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
 			cursor.execute(sql_command)
 			connection.commit()
 		else:

@@ -18,18 +18,78 @@
 
 {% set question_id = question_id + 1 %}
 
-<h3><center>Question {{ question_id }}</center></h3>
+<h2><center>Question {{ question_id }}</center></h2>
+<center><div><b>Time remaining: <span id="time"></span> seconds!</b></div></center>
 </br>
 <center><img src= "{{ url_for('static', filename = 'images/') }}{{ path }}" class="img-fluid" alt="Responsive image" width = "600" height = "400"></center>
 </br>
-<form name="answer" method='POST' action="{{ url_for('game', question_id=question_id) }}">
-	{% for choice in choices %}
-		<center><div class="radio">
-	  		<label><input type="radio" name="answer" value="{{ choice }}" required>{{ choice }}</label>
-		</div></center>
-	{% endfor %}
-	<center><button class="btn btn-default">Submit</button></center>
+<form id="myForm" name="answer" method='POST' action="{{ url_for('game', question_id=question_id) }}">
+  {% for choice in choices %}
+    <center><div class="radio">
+        <label><input type="radio" name="answer" value="{{ choice }}" required>{{ choice }}</label>
+    </div></center>
+  {% endfor %}
+  <center><button class="btn btn-default">Submit</button></center>
 </form>
+
+
+<script src="{{ url_for('static', filename='countdowntimer.js') }}" ></script>
+
+<script type = "text/javascript">
+window.onload = function() {
+
+
+  var display = document.querySelector('#time'),
+      timer = new CountDownTimer(7);
+
+  if({{ old }} == 1) {
+    timer = new CountDownTimer(0);
+    alert("Stop refreshing! Proceeding to the next question.");
+  }
+
+  timer.onTick(format).onTick(submit).start();
+
+  function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  function submit() {
+    if (this.expired()) {
+      post("{{ url_for('game', question_id=question_id) }}", {answer: "none"});
+    }
+  }
+
+  function format(minutes, seconds) {
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    display.textContent = minutes + ':' + seconds;
+  }
+  
+
+
+};
+
+</script>
 
 
 <!-- <form action="{{ url_for('login') }}" method='post'> -->
