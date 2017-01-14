@@ -297,6 +297,16 @@ def stats():
 	tp_fourth = ''
 	mecep_avg = 0
 	tp_mecep = ''
+	hs_plt1 = 0
+	hs_plt2 = 0
+	hs_ln = 0
+	hs_bn = 0
+	hs_un = 0
+	hs_first = 0
+	hs_second = 0
+	hs_third = 0
+	hs_fourth = 0
+	hs_mecep = 0
 
 	connection = sqlite3.connect("game.db")
 	cursor = connection.cursor()
@@ -306,25 +316,35 @@ def stats():
 	for u in stat_list:
 		if(u[2] == "PC1" and tp_plt1 == ''):
 			tp_plt1 = u[0]
+			hs_plt1 = int(u[1])
 		if(u[2] == "PC2" and tp_plt2 == ''):
 			tp_plt2 = u[0]
+			hs_plt2 = int(u[1])
 		if(u[2] == "LNPC" and tp_ln == ''):
 			tp_ln = u[0]
+			hs_ln = int(u[1])
 		if(u[2] == "Staff" and tp_bn == ''):
 			tp_bn = u[0]
+			hs_bn = int(u[1])
 		if(u[2] == "Unit Staff" and tp_un == ''):
 			tp_un = u[0]
+			hs_un = int(u[1])
 		
 		if(u[3] == "1/C" and tp_first == ''):
 			tp_first = u[0]
+			hs_first = int(u[1])
 		if(u[3] == "2/C" and tp_second == ''):
 			tp_second = u[0]
+			hs_second = int(u[1])
 		if(u[3] == "3/C" and tp_third == ''):
 			tp_third = u[0]
+			hs_third = int(u[1])
 		if(u[3] == "4/C" and tp_fourth == ''):
 			tp_fourth = u[0]
+			hs_fourth = int(u[1])
 		if(u[3] == "MECEP" and tp_mecep == ''):
 			tp_mecep = u[0]
+			hs_mecep = int(u[1])
 
 		stat_list[index] = [int(u[1]), u[2], u[3]]
 		index += 1
@@ -404,7 +424,7 @@ def stats():
 	else:
 		mecep_avg = 0
 
-	return render_template("stats.html", plt1_avg=plt1_avg, plt2_avg=plt2_avg, ln_avg=ln_avg, bnstaff_avg=bnstaff_avg, unstaff_avg=unstaff_avg, first_avg=first_avg, second_avg=second_avg, third_avg=third_avg, fourth_avg=fourth_avg, mecep_avg=mecep_avg, tp_plt1=tp_plt1, tp_plt2=tp_plt2, tp_ln=tp_ln, tp_bn=tp_bn, tp_un=tp_un, tp_first=tp_first, tp_second=tp_second, tp_third=tp_third, tp_fourth=tp_fourth, tp_mecep=tp_mecep)
+	return render_template("stats.html", plt1_avg=plt1_avg, plt2_avg=plt2_avg, ln_avg=ln_avg, bnstaff_avg=bnstaff_avg, unstaff_avg=unstaff_avg, first_avg=first_avg, second_avg=second_avg, third_avg=third_avg, fourth_avg=fourth_avg, mecep_avg=mecep_avg, tp_plt1=tp_plt1, tp_plt2=tp_plt2, tp_ln=tp_ln, tp_bn=tp_bn, tp_un=tp_un, tp_first=tp_first, tp_second=tp_second, tp_third=tp_third, tp_fourth=tp_fourth, tp_mecep=tp_mecep, hs_plt1=hs_plt1, hs_plt2=hs_plt2, hs_ln=hs_ln, hs_bn=hs_bn, hs_un=hs_un, hs_first=hs_first, hs_second=hs_second, hs_third=hs_third, hs_fourth=hs_fourth, hs_mecep=hs_mecep)
 
 
 if __name__ == "__main__":
