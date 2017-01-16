@@ -10,15 +10,13 @@ connection = sqlite3.connect("game.db")
 cursor = connection.cursor()
 cursor.execute("SELECT name from login order by name")
 users = cursor.fetchall()
+cursor.execute("DROP TABLE IF EXISTS answers")
+connection.commit()
+connection.close()
 index = 0
 for u in users:
 	users[index] = u[0]
 	index += 1
-
-correct_answers = [None] * 30
-user_answers = [None] * 30
-pic_used = [None] * 30
-choices = []
 
 
 
@@ -62,9 +60,7 @@ def passcreate():
 	cursor = connection.cursor()
 	if request.method=='POST':
 		pwd = request.form["password"]
-		print(pwd)
 		sqlcommand = "UPDATE login SET pass = '" + pwd + "' WHERE name = '" + session['name'] + "'"
-		print(sqlcommand)
 		cursor.execute(sqlcommand)
 		connection.commit()
 		connection.close()
@@ -98,16 +94,6 @@ def login():
 
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
-	global correct_answers
-	global user_answers
-	global pic_used
-	global choices
-
-	correct_answers = [None] * 30
-	user_answers = [None] * 30
-	pic_used = [None] * 30
-	choices = []
-
 	return render_template("instructions.html")
 
 ships = ["Arleigh Burke Class Destroyer (DDG-51)", "Zumwalt Class Destroyer (DDG-1000)", "Cruiser (CG)", "Littoral Combat Ship (LCS)", "Dock Landing Ship (LSD)", "Landing Helicopter Assault (LHA)", "Landing Helicopter Dock (LHD)", "Aircraft Carrier (CVN)", "Amphibious Command Ship (LCC)", "Amphibious Transport Dock (LPD)", "Landing Craft Air Cushion (LCAC)", "Mine Counter Measures (MCM)", "Patrol Coastal Ship (PC)", "Submarine Tender (AS)"]
@@ -119,12 +105,20 @@ platforms = [ships, subs, fixed, rotary, unmanned]
 
 @app.route('/game/<int:question_id>', methods=['GET', 'POST'])
 def game(question_id):
+	connection = sqlite3.connect("game.db")
+	cursor = connection.cursor()
 	if 'name' not in session:
 		return "You are not logged in, please return to the frontpage and log in"
+	if(question_id == 0):
+		sql_command = "CREATE TABLE answers(id INT, correct_answer TEXT, user_answer TEXT, pic_used TEXT)"
+		cursor.execute(sql_command)
+		connection.commit()
 	if(question_id > 0):
-		global user_answers
-		if not user_answers[question_id-1]:
-			user_answers[question_id-1] = request.form["answer"]
+		cursor.execute("SELECT user_answer from answers where id = '" + str(question_id) + "'")
+		user_answer = cursor.fetchall()
+		if not user_answer:
+			cursor.execute("UPDATE answers SET user_answer = '" + request.form["answer"] + "' WHERE id = '" + str(question_id-1) + "'")
+			connection.commit()
 		else:
 			flash("You already submitted an answer for that question")
 	if(question_id == 30):
@@ -132,10 +126,19 @@ def game(question_id):
 
 	path = ''
 	old = "No"
-	global pic_used
-	if not pic_used[question_id]:
+	choices = []
 
-		print(question_id)
+	cursor.execute("SELECT pic_used from answers where id = '" + str(question_id) + "'")
+	pic_used = cursor.fetchall()
+	if not pic_used:
+
+		cursor.execute("SELECT pic_used from answers")
+		pic_used = cursor.fetchall()
+		index = 0
+		for p in pic_used:
+			pic_used[index] = p[0]
+			index += 1
+
 		# select random platform and create path to send to template
 		randlist = [platforms[0]] * 30 + [platforms[1]] * 20 + [platforms[2]] * 20 + [platforms[3]] * 20 + [platforms[4]] * 5
 		rand1 = random.choice(randlist)
@@ -172,12 +175,12 @@ def game(question_id):
 			rand3 = random.randint(1,5)
 			path = answer + "/" + str(rand3)
 			counter += 1
-		pic_used[question_id] = path
-		global correct_answers
-		correct_answers[question_id] = answer
+
+		sql_command = "INSERT INTO answers(id, correct_answer, pic_used) VALUES ('" + str(question_id) + "', '" + answer + "', '" + path + "')"
+		cursor.execute(sql_command)
+		connection.commit()
 
 		# create list with random choices, with one of them being the correct answer in random order
-		global choices
 		choices = [answer, "b", "c", "d"]
 		randChoice = random.choice(platforms[rand])
 		for index in range(1, 4):
@@ -193,7 +196,7 @@ def game(question_id):
 			choices[0] = temp
 
 	else:
-		path = pic_used[question_id]
+		path = pic_used[0]
 		old = "Yes"
 
 	return render_template("game.html", path=path, choices=choices, question_id=question_id, old=old)
@@ -201,10 +204,18 @@ def game(question_id):
 
 @app.route('/score', methods=['GET', 'POST'])
 def score():
-	global correct_answers
-	global user_answers
-	global pic_used
-	global choices
+	connection = sqlite3.connect("game.db")
+	cursor = connection.cursor()
+	cursor.execute("SELECT correct_answer, user_answer from answers")
+	answers = cursor.fetchall()
+
+	index = 0
+	correct_answers = [None] * 30
+	user_answers = [None] * 30
+	for a in answers:
+		correct_answers[index] = a[0]
+		user_answers[index] = a[1]
+		index += 1
 	
 	score = 0
 	for num in range(0,30):
@@ -212,14 +223,10 @@ def score():
 			score += 1
 		else:
 			score -= 3
-
-	correct_answers = [None] * 30
-	user_answers = [None] * 30
-	pic_used = [None] * 30
-	choices = []
 	
-	connection = sqlite3.connect("game.db")
-	cursor = connection.cursor()
+	cursor.execute("DROP TABLE answers")
+	connection.commit()
+
 	cursor.execute("SELECT * from leaderboard WHERE name='" + session['name'] + "'")
 	name_row = cursor.fetchone()
 	status = ''
