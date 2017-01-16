@@ -26,7 +26,7 @@ def index():
 
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
-	if session['name'] != None and session['verified']:
+	if 'name' in session and 'verified' in session:
 		return render_template("homepage.html", name=session['name'])
 	else:
 		return render_template("notLogged.html")
@@ -91,6 +91,11 @@ def passverify():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	return render_template("login.html", users=users)
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+	session.clear()
+	return redirect(url_for('login'))
 
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
