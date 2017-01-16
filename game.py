@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, render_template, flash
+from flask import Flask, request, redirect, url_for, render_template, flash, g, session
 import sqlite3
 import random
 from time import sleep
@@ -15,14 +15,11 @@ for u in users:
 	users[index] = u[0]
 	index += 1
 
-name = ''
-platoon = ''
-user_class = ''
-verified = False
 correct_answers = [None] * 30
 user_answers = [None] * 30
 pic_used = [None] * 30
 choices = []
+
 
 
 @app.route('/')
@@ -31,18 +28,8 @@ def index():
 
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
-	global correct_answers
-	global user_answers
-	global pic_used
-	global choices
-
-	correct_answers = [None] * 30
-	user_answers = [None] * 30
-	pic_used = [None] * 30
-	choices = []
-	
-	if name != '' and verified:
-		return render_template("homepage.html", name=name)
+	if session['name'] != None and session['verified']:
+		return render_template("homepage.html", name=session['name'])
 	else:
 		return render_template("notLogged.html")
 
@@ -52,22 +39,22 @@ def password():
 	connection = sqlite3.connect("game.db")
 	cursor = connection.cursor()
 	if request.method=='POST':
-		global name 
-		name = request.form["name"]
+		session['name'] = request.form["name"]
+		print(session['name'])
 		cursor.execute("SELECT * FROM login")
 		result = cursor.fetchall()
 		contained = False
 		for r in result:
-			if(r[0]==name):
+			if(r[0]== session['name']):
 				if(r[1] != None):
 					contained = True
 				break
 		if(contained == False):
 			connection.close()
-			return render_template("createPass.html", name=name)
+			return render_template("createPass.html", name=session['name'])
 		else:
 			connection.close()
-			return render_template("password.html", name=name)
+			return render_template("password.html", name=session['name'])
 
 @app.route('/passcreate', methods=['GET', 'POST'])
 def passcreate():
@@ -76,7 +63,7 @@ def passcreate():
 	if request.method=='POST':
 		pwd = request.form["password"]
 		print(pwd)
-		sqlcommand = "UPDATE login SET pass = '" + pwd + "' WHERE name = '" + name + "'"
+		sqlcommand = "UPDATE login SET pass = '" + pwd + "' WHERE name = '" + session['name'] + "'"
 		print(sqlcommand)
 		cursor.execute(sqlcommand)
 		connection.commit()
@@ -92,16 +79,13 @@ def passverify():
 		cursor.execute("SELECT * FROM login")
 		result = cursor.fetchall()
 		for r in result:
-			if(r[0]==name):
+			if(r[0]==session['name']):
 				if(r[1]==pwd):
-					global verified
-					global platoon
-					global user_class
-					verified = True
-					platoon = r[2]
-					user_class = r[3]
+					session['verified'] = True
+					session['platoon'] = r[2]
+					session['user_class'] = r[3]
 					connection.close()
-					return render_template("homepage.html", name=name)
+					return render_template("homepage.html", name=session['name'])
 				else:
 					connection.close()
 					flash("Incorrect password, please try again")
@@ -135,7 +119,7 @@ platforms = [ships, subs, fixed, rotary, unmanned]
 
 @app.route('/game/<int:question_id>', methods=['GET', 'POST'])
 def game(question_id):
-	if(name==''):
+	if 'name' not in session:
 		return "You are not logged in, please return to the frontpage and log in"
 	if(question_id > 0):
 		global user_answers
@@ -228,7 +212,7 @@ def score():
 			score += 1
 		else:
 			score -= 3
-	
+
 	correct_answers = [None] * 30
 	user_answers = [None] * 30
 	pic_used = [None] * 30
@@ -236,26 +220,26 @@ def score():
 	
 	connection = sqlite3.connect("game.db")
 	cursor = connection.cursor()
-	cursor.execute("SELECT * from leaderboard WHERE name='" + name + "'")
+	cursor.execute("SELECT * from leaderboard WHERE name='" + session['name'] + "'")
 	name_row = cursor.fetchone()
 	status = ''
 	if(not name_row):
 		status = "Your new high score!"
-		cursor.execute("DELETE FROM leaderboard WHERE name = '" + name + "'")
-		if(user_class is None):
-			sql_command = "INSERT INTO leaderboard(name, score, platoon) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "')"
+		cursor.execute("DELETE FROM leaderboard WHERE name = '" + session['name'] + "'")
+		if(session['user_class'] is None):
+			sql_command = "INSERT INTO leaderboard(name, score, platoon) VALUES ('" + session['name'] + "', '" + str(score) + "', '" + session['platoon'] + "')"
 		else:
-			sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
+			sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + session['name'] + "', '" + str(score) + "', '" + session['platoon'] + "', '" + session['user_class'] + "')"
 		cursor.execute(sql_command)
 		connection.commit()
 	else:
 		if(int(name_row[1]) < score):
 			status = "Your new high score!"
-			cursor.execute("DELETE FROM leaderboard WHERE name = '" + name + "'")
-			if(user_class is None):
-				sql_command = "INSERT INTO leaderboard(name, score, platoon) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "')"
+			cursor.execute("DELETE FROM leaderboard WHERE name = '" + session['name'] + "'")
+			if(session['user_class'] is None):
+				sql_command = "INSERT INTO leaderboard(name, score, platoon) VALUES ('" + session['name'] + "', '" + str(score) + "', '" + session['platoon'] + "')"
 			else:
-				sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + name + "', '" + str(score) + "', '" + platoon + "', '" + user_class + "')"
+				sql_command = "INSERT INTO leaderboard(name, score, platoon, class) VALUES ('" + session['name'] + "', '" + str(score) + "', '" + session['platoon'] + "', '" + session['user_class'] + "')"
 			cursor.execute(sql_command)
 			connection.commit()
 		else:
