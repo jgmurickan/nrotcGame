@@ -42,7 +42,7 @@ window.onload = function() {
   var display = document.querySelector('#time'),
       timer = new CountDownTimer(7);
 
-  if({{ old }} == 1) {
+  if("{{ old }}" === "Yes") {
     timer = new CountDownTimer(0);
     alert("Stop refreshing or using the back button! Proceeding to the next question.");
   }

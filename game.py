@@ -19,6 +19,10 @@ name = ''
 platoon = ''
 user_class = ''
 verified = False
+correct_answers = [None] * 30
+user_answers = [None] * 30
+pic_used = [None] * 30
+choices = []
 
 
 @app.route('/')
@@ -27,6 +31,16 @@ def index():
 
 @app.route('/homepage', methods=['GET', 'POST'])
 def homepage():
+	global correct_answers
+	global user_answers
+	global pic_used
+	global choices
+
+	correct_answers = [None] * 30
+	user_answers = [None] * 30
+	pic_used = [None] * 30
+	choices = []
+	
 	if name != '' and verified:
 		return render_template("homepage.html", name=name)
 	else:
@@ -100,6 +114,16 @@ def login():
 
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
+	global correct_answers
+	global user_answers
+	global pic_used
+	global choices
+
+	correct_answers = [None] * 30
+	user_answers = [None] * 30
+	pic_used = [None] * 30
+	choices = []
+
 	return render_template("instructions.html")
 
 ships = ["Arleigh Burke Class Destroyer (DDG-51)", "Zumwalt Class Destroyer (DDG-1000)", "Cruiser (CG)", "Littoral Combat Ship (LCS)", "Dock Landing Ship (LSD)", "Landing Helicopter Assault (LHA)", "Landing Helicopter Dock (LHD)", "Aircraft Carrier (CVN)", "Amphibious Command Ship (LCC)", "Amphibious Transport Dock (LPD)", "Landing Craft Air Cushion (LCAC)", "Mine Counter Measures (MCM)", "Patrol Coastal Ship (PC)", "Submarine Tender (AS)"]
@@ -108,11 +132,6 @@ fixed = ["C-2 Greyhound", "C-130 Hercules", "E-2 Hawkeye", "E-6B Mercury", "EA-6
 rotary = ["CH-53 Sea Stallion", "MH-53 Sea Dragon", "MH-60S Seahawk", "MH-60R Seahawk", "TH-57 Sea Ranger", "MV-22 Osprey"]
 unmanned = ["MQ-8 Fire Scout", "MQ-8C Fire Scout", "MQ-4C Triton", "X-47B"]
 platforms = [ships, subs, fixed, rotary, unmanned]
-correct_answers = [None] * 30
-user_answers = [None] * 30
-pic_used = [None] * 30
-answer = ''
-choices = []
 
 @app.route('/game/<int:question_id>', methods=['GET', 'POST'])
 def game(question_id):
@@ -128,7 +147,8 @@ def game(question_id):
 		return redirect(url_for('score'))
 
 	path = ''
-	old = 0
+	old = "No"
+	global pic_used
 	if not pic_used[question_id]:
 
 		print(question_id)
@@ -154,7 +174,6 @@ def game(question_id):
 		length = len(platforms[rand])
 		rand2 = random.randint(0, length-1)
 		rand3 = random.randint(1, 5)
-		global answer
 		answer = platforms[rand][rand2]
 		path = answer + "/" + str(rand3)
 
@@ -191,13 +210,18 @@ def game(question_id):
 
 	else:
 		path = pic_used[question_id]
-		old = 1
+		old = "Yes"
 
 	return render_template("game.html", path=path, choices=choices, question_id=question_id, old=old)
 
 
 @app.route('/score', methods=['GET', 'POST'])
 def score():
+	global correct_answers
+	global user_answers
+	global pic_used
+	global choices
+	
 	score = 0
 	for num in range(0,30):
 		if(correct_answers[num] == user_answers[num]):
@@ -205,13 +229,9 @@ def score():
 		else:
 			score -= 3
 	
-	global user_answers
-	global pic_used
-	global answer
-	global choices
+	correct_answers = [None] * 30
 	user_answers = [None] * 30
 	pic_used = [None] * 30
-	answer = ''
 	choices = []
 	
 	connection = sqlite3.connect("game.db")
