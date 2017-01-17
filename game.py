@@ -10,7 +10,6 @@ connection = sqlite3.connect("game.db")
 cursor = connection.cursor()
 cursor.execute("SELECT name from login order by name")
 users = cursor.fetchall()
-cursor.execute("DROP TABLE IF EXISTS answers")
 connection.commit()
 connection.close()
 index = 0
@@ -99,6 +98,11 @@ def logout():
 
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
+	table = "answers_" + session['name'][:4]
+	connection = sqlite3.connect("game.db")
+	cursor = connection.cursor()
+	sql_command = "DROP TABLE IF EXISTS " + table
+	cursor.execute(sql_command)
 	return render_template("instructions.html")
 
 ships = ["Arleigh Burke Class Destroyer (DDG-51)", "Zumwalt Class Destroyer (DDG-1000)", "Cruiser (CG)", "Littoral Combat Ship (LCS)", "Dock Landing Ship (LSD)", "Landing Helicopter Assault (LHA)", "Landing Helicopter Dock (LHD)", "Aircraft Carrier (CVN)", "Amphibious Command Ship (LCC)", "Amphibious Transport Dock (LPD)", "Landing Craft Air Cushion (LCAC)", "Mine Counter Measures (MCM)", "Patrol Coastal Ship (PC)", "Submarine Tender (AS)"]
@@ -115,14 +119,19 @@ def game(question_id):
 	if 'name' not in session:
 		return "You are not logged in, please return to the frontpage and log in"
 	if(question_id == 0):
-		sql_command = "CREATE TABLE answers(id INT, correct_answer TEXT, user_answer TEXT, pic_used TEXT)"
+		table = "answers_" + session['name'][:4]
+		sql_command = "CREATE TABLE " + table + "(id INT, correct_answer TEXT, user_answer TEXT, pic_used TEXT)"
 		cursor.execute(sql_command)
 		connection.commit()
 	if(question_id > 0):
-		cursor.execute("SELECT user_answer from answers where id = '" + str(question_id) + "'")
+		table = "answers_" + session['name'][:4]
+		sql_command = "SELECT user_answer from " + table + " where id = '" + str(question_id) + "'"
+		cursor.execute(sql_command)
 		user_answer = cursor.fetchall()
 		if not user_answer:
-			cursor.execute("UPDATE answers SET user_answer = '" + request.form["answer"] + "' WHERE id = '" + str(question_id-1) + "'")
+			table = "answers_" + session['name'][:4]
+			sql_command = "UPDATE " + table + " SET user_answer = '" + request.form["answer"] + "' WHERE id = '" + str(question_id-1) + "'"
+			cursor.execute(sql_command)
 			connection.commit()
 		else:
 			flash("You already submitted an answer for that question")
@@ -133,11 +142,13 @@ def game(question_id):
 	old = "No"
 	choices = []
 
-	cursor.execute("SELECT pic_used from answers where id = '" + str(question_id) + "'")
+	table = "answers_" + session['name'][:4]
+	sql_command = "SELECT pic_used from " + table + " where id = '" + str(question_id) + "'"
+	cursor.execute(sql_command)
 	pic_used = cursor.fetchall()
 	if not pic_used:
-
-		cursor.execute("SELECT pic_used from answers")
+		sql_command = "SELECT pic_used from " + table
+		cursor.execute(sql_command)
 		pic_used = cursor.fetchall()
 		index = 0
 		for p in pic_used:
@@ -181,7 +192,8 @@ def game(question_id):
 			path = answer + "/" + str(rand3)
 			counter += 1
 
-		sql_command = "INSERT INTO answers(id, correct_answer, pic_used) VALUES ('" + str(question_id) + "', '" + answer + "', '" + path + "')"
+		table = "answers_" + session['name'][:4]
+		sql_command = "INSERT INTO " + table + "(id, correct_answer, pic_used) VALUES ('" + str(question_id) + "', '" + answer + "', '" + path + "')"
 		cursor.execute(sql_command)
 		connection.commit()
 
@@ -211,7 +223,9 @@ def game(question_id):
 def score():
 	connection = sqlite3.connect("game.db")
 	cursor = connection.cursor()
-	cursor.execute("SELECT correct_answer, user_answer from answers")
+	table = "answers_" + session['name'][:4]
+	sql_command = "SELECT correct_answer, user_answer from " + table
+	cursor.execute(sql_command)
 	answers = cursor.fetchall()
 
 	index = 0
@@ -228,8 +242,9 @@ def score():
 			score += 1
 		else:
 			score -= 3
-	
-	cursor.execute("DROP TABLE answers")
+	table = "answers_" + session['name'][:4]
+	sql_command = "DROP TABLE " + table
+	cursor.execute(sql_command)
 	connection.commit()
 
 	cursor.execute("SELECT * from leaderboard WHERE name='" + session['name'] + "'")
