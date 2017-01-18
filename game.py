@@ -98,7 +98,7 @@ def logout():
 
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
-	table = "answers_" + session['name'][:4]
+	table = "answers_" + session['name'][:3] + session['name'][:3]
 	connection = sqlite3.connect("game.db")
 	cursor = connection.cursor()
 	sql_command = "DROP TABLE IF EXISTS " + table
@@ -119,17 +119,17 @@ def game(question_id):
 	if 'name' not in session:
 		return "You are not logged in, please return to the frontpage and log in"
 	if(question_id == 0):
-		table = "answers_" + session['name'][:4]
+		table = "answers_" + session['name'][:3] + session['name'][:3] 
 		sql_command = "CREATE TABLE " + table + "(id INT, correct_answer TEXT, user_answer TEXT, pic_used TEXT)"
 		cursor.execute(sql_command)
 		connection.commit()
 	if(question_id > 0):
-		table = "answers_" + session['name'][:4]
+		table = "answers_" + session['name'][:3] + session['name'][:3]
 		sql_command = "SELECT user_answer from " + table + " where id = '" + str(question_id) + "'"
 		cursor.execute(sql_command)
 		user_answer = cursor.fetchall()
 		if not user_answer:
-			table = "answers_" + session['name'][:4]
+			table = "answers_" + session['name'][:3] + session['name'][:3]
 			sql_command = "UPDATE " + table + " SET user_answer = '" + request.form["answer"] + "' WHERE id = '" + str(question_id-1) + "'"
 			cursor.execute(sql_command)
 			connection.commit()
@@ -142,7 +142,7 @@ def game(question_id):
 	old = "No"
 	choices = []
 
-	table = "answers_" + session['name'][:4]
+	table = "answers_" + session['name'][:3] + session['name'][:3]
 	sql_command = "SELECT pic_used from " + table + " where id = '" + str(question_id) + "'"
 	cursor.execute(sql_command)
 	pic_used = cursor.fetchall()
@@ -192,7 +192,7 @@ def game(question_id):
 			path = answer + "/" + str(rand3)
 			counter += 1
 
-		table = "answers_" + session['name'][:4]
+		table = "answers_" + session['name'][:3] + session['name'][:3]
 		sql_command = "INSERT INTO " + table + "(id, correct_answer, pic_used) VALUES ('" + str(question_id) + "', '" + answer + "', '" + path + "')"
 		cursor.execute(sql_command)
 		connection.commit()
@@ -223,7 +223,7 @@ def game(question_id):
 def score():
 	connection = sqlite3.connect("game.db")
 	cursor = connection.cursor()
-	table = "answers_" + session['name'][:4]
+	table = "answers_" + session['name'][:3] + session['name'][:3]
 	sql_command = "SELECT correct_answer, user_answer from " + table
 	cursor.execute(sql_command)
 	answers = cursor.fetchall()
@@ -242,7 +242,7 @@ def score():
 			score += 1
 		else:
 			score -= 3
-	table = "answers_" + session['name'][:4]
+	table = "answers_" + session['name'][:3] + session['name'][:3]
 	sql_command = "DROP TABLE " + table
 	cursor.execute(sql_command)
 	connection.commit()
